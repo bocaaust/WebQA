@@ -1,0 +1,107 @@
+name: On demand website QA
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Profile name under profiles without the json extension
+        default: ctg
+        required: true
+        type: string
+      target_url:
+        description: Optional HTTPS origin for a new baseline profile instead
+        required: false
+        type: string
+      suite:
+        type: choice
+        options: [full, smoke, accessibility, mobile]
+        default: full
+      browser:
+        type: choice
+        options: [chromium, firefox, webkit]
+        default: chromium
+      managed_test:
+        description: Optional managed module name in examples, without .py (for example test_ctg_contact)
+        required: false
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: webqa-history-${{ github.repository }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install .
+      - name: Install selected browser
+        env:
+          BROWSER: ${{ inputs.browser }}
+        run: python -m playwright install --with-deps "$BROWSER"
+      - uses: actions/cache/restore@v4
+        with:
+          path: .webqa
+          key: webqa-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: webqa-history-${{ runner.os }}-
+      - name: Select or create the profile
+        env:
+          PROFILE: ${{ inputs.profile }}
+          TARGET_URL: ${{ inputs.target_url }}
+          SUITE: ${{ inputs.suite }}
+        run: |
+          python - <<'PY'
+          import os, re, subprocess, sys
+          from pathlib import Path
+          url = os.environ.get('TARGET_URL', '').strip()
+          if url:
+              if os.environ['SUITE'] == 'smoke':
+                  raise SystemExit('A new baseline has no business smoke oracles yet; choose full or accessibility.')
+              config = Path('generated-profile.json')
+              subprocess.run([sys.executable, '-m', 'webqa', 'init', '--url', url,
+                              '--id', 'on-demand', '--out', str(config)], check=True)
+          else:
+              name = os.environ['PROFILE']
+              if not re.fullmatch(r'[a-z][a-z0-9-]{0,39}', name):
+                  raise SystemExit('Invalid profile name')
+              config = Path('profiles') / (name + '.json')
+          if not config.is_file():
+              raise SystemExit('Profile does not exist')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write(f'config={config}\n')
+          PY
+        id: profile
+      - name: Run checks
+        env:
+          CONFIG: ${{ steps.profile.outputs.config }}
+          SUITE: ${{ inputs.suite }}
+          BROWSER: ${{ inputs.browser }}
+          MANAGED_TEST: ${{ inputs.managed_test }}
+        run: |
+          python - <<'PY'
+          import os, re, subprocess, sys
+          command = [sys.executable, '-m', 'webqa', 'run', '--config', os.environ['CONFIG'],
+                     '--suite', os.environ['SUITE'], '--browser', os.environ['BROWSER']]
+          module = os.environ.get('MANAGED_TEST', '').strip()
+          if module:
+              if not re.fullmatch(r'test_[a-z][a-z0-9_]*', module):
+                  raise SystemExit('Invalid managed test name')
+              command += ['--tests', 'examples/' + module + '.py']
+          raise SystemExit(subprocess.run(command, check=False).returncode)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: webqa-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .webqa
+          key: webqa-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}

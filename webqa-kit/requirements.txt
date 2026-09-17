@@ -1,0 +1,7 @@
+# Exact top-level versions; requirements-lock.txt records the installed environment.
+pytest==8.4.2
+pytest-playwright==0.7.1
+playwright==1.55.0
+pytest-html==4.1.1
+pytest-json-report==1.5.0
+jsonschema==4.25.1

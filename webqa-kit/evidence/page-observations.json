@@ -1,0 +1,292 @@
+{
+  "observedAt": "2026-09-16T20:19:45.562Z",
+  "method": "Browser DOM inspection, not pytest or axe execution",
+  "pages": [
+    {
+      "h1": [
+        "Uncompromising engineering excellence"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "/insights",
+          "text": "See our impact"
+        },
+        {
+          "href": "/about",
+          "text": "Explore who we are →"
+        },
+        {
+          "href": "/capabilities/agentic-ai",
+          "text": "Agentic AIWe build production-grade agentic AI grounded in your data, pairing deep LLM expertise with retrieval-augmented generation (RAG), tool-using assistants, and autonomous multi-agent workflows.\n              Every solution ships with the governance, security, and evaluation discipline the mission demands.Learn more"
+        },
+        {
+          "href": "/capabilities/digital-transformation",
+          "text": "Digital Transformation\n              We modernize legacy processes using Business Process Reengineering (BPR),\n              identifying pain points, designing innovative solutions, and refining them for improved efficiency\n              and customer satisfaction.Learn more"
+        },
+        {
+          "href": "/capabilities/devsecops",
+          "text": "DevSecOpsWe accelerate software delivery using automated DevSecOps pipelines, ensuring reliable releases, reduced errors, and cost-efficient scalability.\n              We build secure software by embedding secure coding practices and monitoring system performance to optimize operations and enhance security.Learn more"
+        },
+        {
+          "href": "/capabilities/information-security",
+          "text": "Information SecurityWe provide enterprise authentication and authorization solutions, using multi-factor authentication and fine-grained access controls to enhance security. Embracing Zero Trust, we implement continuous verification and least-privilege access to proactively detect and respond to threats.Learn more"
+        },
+        {
+          "href": "/capabilities/data-science",
+          "text": "Data Science & AI/MLWe transform big data into actionable insights using tools like Databricks, Apache Spark, Kafka, and Airflow for efficient processing and real-time pipelines.\n              Our AI/ML and data visualization expertise helps clients make smarter decisions and communicate compelling data-driven stories.Learn more"
+        },
+        {
+          "href": "https://digitalservicescoalition.org",
+          "text": ""
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "See our impact",
+        "Explore who we are →",
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "Capital Technology Group | Federal Digital Services, AI & Cybersecurity",
+      "url": "https://www.capitaltg.com/"
+    },
+    {
+      "h1": [
+        "Mission-ready engineering across AI, data, software, and security"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "/insights",
+          "text": "See our work"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Contact CTG"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Contact us"
+        },
+        {
+          "href": "/labs",
+          "text": "Labs"
+        },
+        {
+          "href": "/insights",
+          "text": "Insights"
+        },
+        {
+          "href": "/about",
+          "text": "About"
+        },
+        {
+          "href": "/careers",
+          "text": "Careers"
+        },
+        {
+          "href": "https://blog.capitaltg.com",
+          "text": "Blog"
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "See our work",
+        "Contact CTG",
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "Capabilities | Capital Technology Group",
+      "url": "https://www.capitaltg.com/capabilities"
+    },
+    {
+      "h1": [
+        "Agentic AI"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "/labs",
+          "text": "CTG Labs: SlateData, Galeo & more"
+        },
+        {
+          "href": "/case-studies/resume-assessment",
+          "text": "Leveraging Large Language Models for Recruitment"
+        },
+        {
+          "href": "/case-studies/federated-search",
+          "text": "Breaking Down Silos through Federated Search"
+        },
+        {
+          "href": "/case-studies/image-gallery-search",
+          "text": "Customer Identification with Deep Learning"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Contact us"
+        },
+        {
+          "href": "/labs",
+          "text": "Labs"
+        },
+        {
+          "href": "/insights",
+          "text": "Insights"
+        },
+        {
+          "href": "/about",
+          "text": "About"
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "Agentic AI | Capital Technology Group",
+      "url": "https://www.capitaltg.com/capabilities/agentic-ai"
+    },
+    {
+      "h1": [
+        "About Us"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "/contact-us",
+          "text": "Contact us"
+        },
+        {
+          "href": "/labs",
+          "text": "Labs"
+        },
+        {
+          "href": "/insights",
+          "text": "Insights"
+        },
+        {
+          "href": "/about",
+          "text": "About"
+        },
+        {
+          "href": "/careers",
+          "text": "Careers"
+        },
+        {
+          "href": "https://blog.capitaltg.com",
+          "text": "Blog"
+        },
+        {
+          "href": "/capabilities/agentic-ai",
+          "text": "Agentic AI"
+        },
+        {
+          "href": "/capabilities/data-science",
+          "text": "Data Science"
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "About Us | Capital Technology Group",
+      "url": "https://www.capitaltg.com/about"
+    },
+    {
+      "h1": [
+        "Streamlining Digital Identity Management"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "/contact-us",
+          "text": "Contact us"
+        },
+        {
+          "href": "/labs",
+          "text": "Labs"
+        },
+        {
+          "href": "/insights",
+          "text": "Insights"
+        },
+        {
+          "href": "/about",
+          "text": "About"
+        },
+        {
+          "href": "/careers",
+          "text": "Careers"
+        },
+        {
+          "href": "https://blog.capitaltg.com",
+          "text": "Blog"
+        },
+        {
+          "href": "/capabilities/agentic-ai",
+          "text": "Agentic AI"
+        },
+        {
+          "href": "/capabilities/data-science",
+          "text": "Data Science"
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "Streamlining Digital Identity Management | Capital Technology Group",
+      "url": "https://www.capitaltg.com/case-studies/digital-identity-management"
+    },
+    {
+      "h1": [
+        "Engineering Excellence—Made Visible"
+      ],
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.devpulsedashboard.com/",
+          "text": "Live Demo"
+        },
+        {
+          "href": "https://github.com/capitaltg/devpulse-dashboard",
+          "text": "GitHub"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Request a Demo"
+        },
+        {
+          "href": "https://capitaltg.github.io/vero/",
+          "text": "Documentation"
+        },
+        {
+          "href": "https://github.com/capitaltg/vero",
+          "text": "GitHub"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Request a Demo"
+        },
+        {
+          "href": "/contact-us",
+          "text": "Request a Demo"
+        },
+        {
+          "href": "https://github.com/capitaltg/pgdx",
+          "text": "GitHub"
+        }
+      ],
+      "mainCount": 1,
+      "nested": [
+        "Contact us"
+      ],
+      "skipLinks": [],
+      "title": "Labs | Capital Technology Group",
+      "url": "https://www.capitaltg.com/labs"
+    }
+  ]
+}

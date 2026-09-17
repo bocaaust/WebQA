@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-09-16T20:28:50.209Z",
+  "method": "Checks executed through the connected browser; not an execution of the packaged Python suite or axe-core",
+  "browser": "Connected Chrome, desktop",
+  "checks": [
+    {
+      "id": "home-content",
+      "status": "passed",
+      "details": {
+        "title": "Capital Technology Group | Federal Digital Services, AI & Cybersecurity",
+        "h1": "Uncompromising engineering excellence"
+      }
+    },
+    {
+      "id": "home-no-nested-controls",
+      "status": "failed",
+      "error": "3 buttons are nested inside links"
+    },
+    {
+      "id": "impact-navigation",
+      "status": "passed",
+      "details": {
+        "url": "https://www.capitaltg.com/insights"
+      }
+    },
+    {
+      "id": "portfolio-image-alt",
+      "status": "failed",
+      "error": "1 image has placeholder alternative text Alt text"
+    },
+    {
+      "id": "case-study-navigation",
+      "status": "passed",
+      "details": {
+        "url": "https://www.capitaltg.com/case-studies/digital-identity-management",
+        "h1": "Streamlining Digital Identity Management"
+      }
+    },
+    {
+      "id": "contact-labels",
+      "status": "passed",
+      "details": {
+        "labels": 5,
+        "submitted": false
+      }
+    },
+    {
+      "id": "contact-alternative-channels",
+      "status": "passed",
+      "details": {
+        "email": "mailto:hello@capitaltg.com?subject=Hello%20CTG&body=Place%20your%20message%20here",
+        "phone": "tel:+17039513625"
+      }
+    },
+    {
+      "id": "about-keyboard-open",
+      "status": "passed",
+      "details": {
+        "expanded": "true"
+      }
+    },
+    {
+      "id": "careers-navigation",
+      "status": "passed",
+      "details": {
+        "url": "https://www.capitaltg.com/careers"
+      }
+    },
+    {
+      "id": "careers-keyboard-accordion",
+      "status": "passed",
+      "details": {
+        "expanded": "true"
+      }
+    }
+  ]
+}

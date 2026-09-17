@@ -1,0 +1,15 @@
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+reports/
+test-results/
+.env
+learning/history.jsonl
+learning/reviews.jsonl
+.webqa/
+build/
+dist/
+*.egg-info/
+.ruff_cache/
+proposals/

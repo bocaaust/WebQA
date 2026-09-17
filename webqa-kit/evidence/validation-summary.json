@@ -1,0 +1,37 @@
+{
+  "offline_tests": {
+    "passed": 54,
+    "failed": 0
+  },
+  "ctg_cases_collected": 43,
+  "live_browser_probes": {
+    "successful": 8,
+    "findings": 2
+  },
+  "distribution": {
+    "wheel_built": true,
+    "sdist_built": true,
+    "wheel_profile_and_collection_verified": true
+  },
+  "not_executed": [
+    "packaged Python browser suite",
+    "axe scans",
+    "mobile browser scenarios",
+    "cross-browser matrix",
+    "GitHub Actions workflow",
+    "actual Ollama inference",
+    "rendered local-app acceptance flow",
+    "Windows and macOS launchers"
+  ],
+  "managed_pytest_collection": {
+    "collected": 3,
+    "executed": 0,
+    "kind": "curated example, not real model output"
+  },
+  "authoring_and_ui": {
+    "offline_workflow_tests": "passed with controlled model responses",
+    "actual_model_inference": "not executed",
+    "rendered_ui": "not executed: managed browser blocked localhost"
+  },
+  "usability_update": "0.2.1: labeled page editor, prerequisite buttons, local selection memory, persisted latest results, built-in help; JavaScript syntax checked"
+}

@@ -1,0 +1,23 @@
+name: Package CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install '.[dev]'
+      - run: ruff check src tests
+      - run: python -m pytest tests/unit --junitxml=unit-results.xml
+      - run: webqa validate profiles/ctg.json
+      - run: webqa run --config profiles/ctg.json --collect-only
+      - run: webqa run --config profiles/ctg.json --tests examples/test_ctg_contact.py --collect-only
+      - run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/*

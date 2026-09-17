@@ -1,0 +1,852 @@
+{
+  "format_version": 1,
+  "package_version": "0.2.0",
+  "site_key": "8dbfa627509438a668b2d433",
+  "profile_sha256": "608e6988284e470215c4fd59d35fecb28b8f3760ea1132b9d0021b89083a6322",
+  "profile": {
+    "schema_version": 1,
+    "id": "ctg",
+    "base_url": "https://www.capitaltg.com",
+    "viewports": [
+      {
+        "id": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "id": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      {
+        "id": "reflow",
+        "width": 320,
+        "height": 844
+      }
+    ],
+    "pages": [
+      {
+        "id": "home",
+        "path": "/",
+        "h1_contains": "Uncompromising engineering excellence",
+        "title_contains": "Capital Technology Group",
+        "checks": [
+          "content",
+          "structure",
+          "axe",
+          "semantics"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P0",
+        "why": "First impression and entry into the main visitor journeys.",
+        "language": "en"
+      },
+      {
+        "id": "capabilities",
+        "path": "/capabilities",
+        "h1_contains": "Mission-ready engineering",
+        "title_contains": "Capabilities",
+        "checks": [
+          "content"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P1",
+        "why": "Prospective customers must be able to understand offered services.",
+        "language": "en"
+      },
+      {
+        "id": "agentic-ai",
+        "path": "/capabilities/agentic-ai",
+        "h1_contains": "Agentic AI",
+        "title_contains": "Agentic AI",
+        "checks": [
+          "content",
+          "structure",
+          "axe"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P1",
+        "why": "Representative service detail template and route to contact.",
+        "language": "en"
+      },
+      {
+        "id": "work",
+        "path": "/insights",
+        "h1_contains": "Unlocking Government Innovation",
+        "title_contains": "Our Work",
+        "checks": [
+          "content",
+          "structure",
+          "axe",
+          "semantics",
+          "image-alt"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P1",
+        "why": "Portfolio demonstrates delivery credibility; representative card collection.",
+        "language": "en"
+      },
+      {
+        "id": "case-study",
+        "path": "/case-studies/digital-identity-management",
+        "h1_contains": "Streamlining Digital Identity Management",
+        "title_contains": "Streamlining Digital Identity Management",
+        "checks": [
+          "content"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P1",
+        "why": "A concrete case study proves that listing links lead to substantive content.",
+        "language": "en"
+      },
+      {
+        "id": "about",
+        "path": "/about",
+        "h1_contains": "About Us",
+        "title_contains": "About Us",
+        "checks": [
+          "content"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P2",
+        "why": "Company identity supports trust but is less urgent than conversion paths.",
+        "language": "en"
+      },
+      {
+        "id": "careers",
+        "path": "/careers",
+        "h1_contains": "Work with an impact",
+        "title_contains": "Careers",
+        "checks": [
+          "content",
+          "structure",
+          "axe"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P1",
+        "why": "Recruiting is a key secondary business goal.",
+        "language": "en"
+      },
+      {
+        "id": "contact",
+        "path": "/contact-us",
+        "h1_contains": "We'd Love to Hear From You!",
+        "title_contains": "Contact",
+        "checks": [
+          "content",
+          "structure",
+          "axe",
+          "reflow"
+        ],
+        "viewports": [
+          "desktop",
+          "mobile",
+          "reflow"
+        ],
+        "priority": "P0",
+        "why": "Lead generation must remain reachable and usable across narrow and wide screens.",
+        "language": "en"
+      },
+      {
+        "id": "labs",
+        "path": "/labs",
+        "h1_contains": "Engineering Excellence",
+        "title_contains": "Labs",
+        "checks": [
+          "content"
+        ],
+        "viewports": [
+          "desktop"
+        ],
+        "priority": "P2",
+        "why": "Public technical work helps visitors evaluate CTG expertise.",
+        "language": "en"
+      }
+    ],
+    "journeys": [
+      {
+        "id": "impact-to-case-study",
+        "start": "/",
+        "priority": "P0",
+        "why": "Visitors should reach evidence of delivered work from the homepage.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "See our impact"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/insights"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "heading",
+              "level": 1
+            },
+            "assert": "text",
+            "value": "Unlocking Government Innovation"
+          },
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "Streamlining Digital Identity Management",
+              "exact": false
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/case-studies/digital-identity-management"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "heading",
+              "level": 1
+            },
+            "assert": "text",
+            "value": "Streamlining Digital Identity Management"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "capability-to-contact",
+        "start": "/",
+        "priority": "P0",
+        "why": "Covers the customer discovery and inquiry funnel without sending a message.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "selector": "main a[href=\"/capabilities/agentic-ai\"]"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/capabilities/agentic-ai"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "heading",
+              "level": 1
+            },
+            "assert": "text",
+            "value": "Agentic AI"
+          },
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "Contact us"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/contact-us"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Email Address"
+            },
+            "assert": "visible"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "about-menu-to-careers",
+        "start": "/",
+        "priority": "P0",
+        "why": "Candidates must find recruiting from primary navigation.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "About",
+              "scope": "header"
+            }
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "About",
+              "scope": "header"
+            },
+            "assert": "attribute",
+            "attribute": "aria-expanded",
+            "value": "true"
+          },
+          {
+            "action": "click",
+            "locator": {
+              "role": "menuitem",
+              "name": "Careers"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/careers"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "heading",
+              "level": 1
+            },
+            "assert": "text",
+            "value": "Work with an impact"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "contact-input",
+        "start": "/contact-us",
+        "priority": "P0",
+        "why": "Confirms editable labeled fields with synthetic values; submission is deliberately excluded.",
+        "steps": [
+          {
+            "action": "fill",
+            "locator": {
+              "label": "Name"
+            },
+            "value": "QA Example"
+          },
+          {
+            "action": "fill",
+            "locator": {
+              "label": "Organization"
+            },
+            "value": "Example Test Organization"
+          },
+          {
+            "action": "fill",
+            "locator": {
+              "label": "Email Address"
+            },
+            "value": "qa@example.invalid"
+          },
+          {
+            "action": "fill",
+            "locator": {
+              "label": "Phone Number"
+            },
+            "value": "202-555-0100"
+          },
+          {
+            "action": "fill",
+            "locator": {
+              "label": "Message"
+            },
+            "value": "Synthetic QA input. Never submit this message."
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Send Message"
+            },
+            "assert": "visible"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "keyboard-menu",
+        "start": "/",
+        "priority": "P1",
+        "why": "Keyboard users must reach, open, and escape the desktop menu with focus restored.",
+        "steps": [
+          {
+            "action": "tab-to",
+            "locator": {
+              "role": "link",
+              "name": "About",
+              "scope": "header"
+            },
+            "max_tabs": 20
+          },
+          {
+            "action": "keyboard",
+            "value": "Enter"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "About",
+              "scope": "header"
+            },
+            "assert": "attribute",
+            "attribute": "aria-expanded",
+            "value": "true"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "menu",
+              "name": "About"
+            },
+            "assert": "visible"
+          },
+          {
+            "action": "keyboard",
+            "value": "ArrowDown"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "selector": "[role=\"menuitem\"]:focus"
+            },
+            "assert": "visible"
+          },
+          {
+            "action": "keyboard",
+            "value": "Escape"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "menu",
+              "name": "About"
+            },
+            "assert": "hidden"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "About",
+              "scope": "header"
+            },
+            "assert": "focused"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": true
+      },
+      {
+        "id": "careers-accordion",
+        "start": "/careers",
+        "priority": "P1",
+        "why": "Keyboard activation and ARIA state expose culture content correctly.",
+        "steps": [
+          {
+            "action": "press",
+            "locator": {
+              "role": "button",
+              "name": "Community"
+            },
+            "value": "Enter"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Community"
+            },
+            "assert": "attribute",
+            "attribute": "aria-expanded",
+            "value": "true"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "region",
+              "name": "Community"
+            },
+            "assert": "visible"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Culture"
+            },
+            "assert": "attribute",
+            "attribute": "aria-expanded",
+            "value": "false"
+          },
+          {
+            "action": "press",
+            "locator": {
+              "role": "button",
+              "name": "Community"
+            },
+            "value": "Space"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Community"
+            },
+            "assert": "attribute",
+            "attribute": "aria-expanded",
+            "value": "false"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": true
+      },
+      {
+        "id": "mobile-contact",
+        "start": "/",
+        "priority": "P0",
+        "why": "Mobile visitors must reach the main conversion flow.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "role": "button",
+              "name": "Navigation Menu"
+            }
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "Contact Us",
+              "scope": "nav"
+            },
+            "assert": "visible"
+          },
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "Contact Us",
+              "scope": "nav"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/contact-us"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Name"
+            },
+            "assert": "visible"
+          }
+        ],
+        "viewport": "mobile",
+        "accessibility": false
+      },
+      {
+        "id": "careers-destinations",
+        "start": "/careers",
+        "priority": "P1",
+        "why": "Validate readable recruiting destinations without opening an external application.",
+        "steps": [
+          {
+            "action": "links",
+            "locator": {
+              "selector": "main a[href*=\"boards.greenhouse.io\"]"
+            },
+            "hosts": [
+              "boards.greenhouse.io"
+            ],
+            "path_prefix": "/capitaltg/jobs/",
+            "min_count": 1
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "logo-home",
+        "start": "/contact-us",
+        "priority": "P1",
+        "why": "Users can recover their starting point from a deep link.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "role": "link",
+              "name": "Capital Technology Group logo",
+              "scope": "header"
+            }
+          },
+          {
+            "action": "expect-url",
+            "value": "/"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "heading",
+              "level": 1
+            },
+            "assert": "text",
+            "value": "Uncompromising engineering excellence"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "contact-alternatives",
+        "start": "/contact-us",
+        "priority": "P1",
+        "why": "Alternative email and telephone channels remain available without launching external apps.",
+        "steps": [
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "hello@capitaltg.com"
+            },
+            "assert": "attribute",
+            "attribute": "href",
+            "value": "mailto:hello@capitaltg.com?subject=Hello%20CTG&body=Place%20your%20message%20here"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "(703) 951-3625"
+            },
+            "assert": "attribute",
+            "attribute": "href",
+            "value": "tel:+17039513625"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": false
+      },
+      {
+        "id": "contact-tab-order",
+        "start": "/contact-us",
+        "priority": "P1",
+        "why": "Tab reaches each form field and then the submit control, without activating it.",
+        "steps": [
+          {
+            "action": "tab-to",
+            "locator": {
+              "label": "Name"
+            },
+            "max_tabs": 30
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Organization"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Email Address"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Phone Number"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Message"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Send Message"
+            },
+            "assert": "focused"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": true
+      },
+      {
+        "id": "mobile-menu-axe",
+        "start": "/",
+        "priority": "P1",
+        "why": "Scan the opened menu state that a default page scan cannot cover.",
+        "steps": [
+          {
+            "action": "click",
+            "locator": {
+              "role": "button",
+              "name": "Navigation Menu"
+            }
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "link",
+              "name": "Home",
+              "scope": "nav"
+            },
+            "assert": "visible"
+          },
+          {
+            "action": "axe"
+          }
+        ],
+        "viewport": "mobile",
+        "accessibility": true
+      }
+    ]
+  },
+  "plan": {
+    "summary": "Prepared contact-page examples for the authoring workflow",
+    "assumptions": [
+      "These are curated examples based on site inspection, not output from an executed model."
+    ],
+    "tests": [
+      {
+        "id": "contact-heading",
+        "kind": "page",
+        "page": "contact",
+        "check": "content",
+        "viewport": "desktop",
+        "priority": "P0",
+        "why": "Visitors should recognize the contact page"
+      },
+      {
+        "id": "contact-accessibility",
+        "kind": "page",
+        "page": "contact",
+        "check": "axe",
+        "viewport": "mobile",
+        "priority": "P1",
+        "why": "Detect accessibility rule violations on a small screen"
+      },
+      {
+        "id": "contact-keyboard",
+        "start": "/contact-us",
+        "priority": "P1",
+        "why": "Tab reaches each form field and then the submit control, without activating it.",
+        "steps": [
+          {
+            "action": "tab-to",
+            "locator": {
+              "label": "Name"
+            },
+            "max_tabs": 30
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Organization"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Email Address"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Phone Number"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "label": "Message"
+            },
+            "assert": "focused"
+          },
+          {
+            "action": "keyboard",
+            "value": "Tab"
+          },
+          {
+            "action": "expect",
+            "locator": {
+              "role": "button",
+              "name": "Send Message"
+            },
+            "assert": "focused"
+          }
+        ],
+        "viewport": "desktop",
+        "accessibility": true,
+        "kind": "journey"
+      }
+    ]
+  },
+  "model": "curated-example-no-model-execution",
+  "created": "2026-09-16"
+}

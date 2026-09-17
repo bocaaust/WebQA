@@ -1,0 +1,13 @@
+{
+  "run_id": "20260916T203403Z-beeb2a12",
+  "created": "2026-09-16T20:34:03.047609+00:00",
+  "site_key": "8dbfa627509438a668b2d433",
+  "site_id": "ctg",
+  "base_url": "https://www.capitaltg.com",
+  "suite": "full",
+  "browser": "chromium",
+  "package_version": "0.1.0",
+  "profile_sha256": "052b33d8ccca20248f4feaaa9313d8afbb0b8364cf9a0dbe2d9ae0e9678ee74d",
+  "execution": "collection-only",
+  "exit_code": 0
+}

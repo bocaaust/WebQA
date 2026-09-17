@@ -1,0 +1,6 @@
+{
+  "name": "ctg-public-site-qa",
+  "private": true,
+  "description": "JavaScript accessibility engine only; all tests use Python",
+  "dependencies": { "axe-core": "4.10.3" }
+}
