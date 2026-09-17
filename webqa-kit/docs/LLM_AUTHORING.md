@@ -66,3 +66,8 @@ Do not remove assertions just to get a passing run. The proposal highlights remo
 The integration is implemented and exercised with deterministic stub responses and real pytest collection. Actual model inference, generated browser execution, and the hosted GitHub workflows were not run in this environment. The local app's HTTP routes are tested; the managed browser refused localhost access, so its rendered end-to-end UI workflow remains an installation acceptance check.
 
 Next improvements would include a controlled browser fixture site, a labeled authoring evaluation set, measured selector accuracy, better novice explanations, undo inside the app, and persistent team review workflows. A hosted version also needs authentication, tenant isolation, target verification, network controls, and durable storage.
+
+
+## Version 0.3.0 transport update
+
+Model requests stream progress, default to ten minutes, and can be set to twenty minutes in the app or with `--ai-timeout 1200` on develop/revise/run. Duplicate generated Python and output schema copies have been removed from the authoring packet; the complete current managed plan remains the revision source of truth. New requests should contain 1–3 focused scenarios. Failed or truncated responses never create an applicable partial proposal. Reports can explain failures using sanitized assertion excerpts and rule metadata, alongside locally stored screenshots; the text model does not interpret image pixels. See the README for evidence limits and acceptance checks.

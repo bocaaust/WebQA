@@ -95,3 +95,22 @@ def loaded_page(page, case, site_config):
     else:
         expect(page.locator("body")).to_be_visible()
     return page
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if not report.failed:
+        return
+    from webqa.reporting import capture_failure
+    case = item.funcargs.get("case")
+    output = item.funcargs.get("case_output")
+    if case is None or output is None:
+        return
+    try:
+        capture_failure(item.funcargs.get("page"), case, output, item.nodeid, report.when,
+                        str(call.excinfo.value) if call.excinfo else report.longreprtext)
+    except Exception as exc:
+        # Evidence capture must never change a real test outcome.
+        (output / "capture-error.txt").write_text(str(exc)[:1000], encoding="utf-8")

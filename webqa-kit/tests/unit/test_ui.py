@@ -129,3 +129,86 @@ def test_latest_result_survives_reopening_and_stays_with_website(app, monkeypatc
         assert reopened.latest_result(app.site(first['id'])) is None
     finally:
         reopened.pool.shutdown(wait=True)
+
+
+def test_run_saves_report_before_slow_ai_and_retains_it_on_model_failure(app, monkeypatch):
+    saved = app.save_site('https://example.com')
+    def fake_run(command, **kwargs):
+        out = Path(command[command.index('--out') + 1]) / 'example' / 'one'
+        out.mkdir(parents=True)
+        (out / 'run.json').write_text('{}')
+        (out / 'results.json').write_text(json.dumps({'summary': {'failed': 1}, 'tests': [
+            {'nodeid': 'test[home]', 'outcome': 'failed'}]}))
+        from subprocess import CompletedProcess
+        return CompletedProcess(command, 1, 'one failure', '')
+    def unavailable(*_):
+        preview = app.latest_result(app.site(saved['id']))
+        assert preview['counts']['failed'] == 1
+        assert preview['report'].endswith('/overview.html')
+        raise ValueError('Model unavailable')
+    monkeypatch.setattr('webqa.ui.subprocess.run', fake_run)
+    monkeypatch.setattr('webqa.reporting.chat', unavailable)
+    job = app.run(saved['id'], model='offline')
+    app.pool.submit(lambda: None).result(timeout=5)
+    result = app.jobs[job['job']]
+    assert result['status'] == 'done'
+    assert 'unavailable' in result['result']['ai_status']
+    assert result['result']['exit_code'] == 1
+    assert app.latest_result(app.site(saved['id']))['failures'][0]['case_id'] == 'home'
+
+
+def test_ai_wait_settings_and_progress_reach_worker(app, monkeypatch):
+    from webqa.llm import _OPTIONS, progress
+    gate = threading.Event()
+    entered = threading.Event()
+    def work():
+        assert _OPTIONS.get()['timeout'] == 1200
+        progress('Model is responding')
+        entered.set()
+        gate.wait(2)
+        return 'done'
+    job = app.enqueue(work, ai_timeout=1200)
+    assert entered.wait(1)
+    assert app.jobs[job['job']]['message'] == 'Model is responding'
+    gate.set()
+    app.pool.submit(lambda: None).result(timeout=5)
+    with pytest.raises(ValueError, match='wait time'):
+        app.enqueue(lambda: None, ai_timeout=3600)
+
+
+def test_report_http_serves_inline_report_and_png_but_not_arbitrary_files(app):
+    saved = app.save_site('https://example.com')
+    run = app.site(saved['id']) / 'reports' / ('a' * 32) / 'example' / 'run-1'
+    shot = run / 'checks' / 'home' / 'failure-call.png'
+    shot.parent.mkdir(parents=True)
+    shot.write_bytes(b'\x89PNG\r\n\x1a\n')
+    (run / 'overview.html').write_text('<h1>Readable report</h1>')
+    (run / 'secret.json').write_text('not served')
+    server = ThreadingHTTPServer(('127.0.0.1', 0), handler(app, 'test-session'))
+    thread = threading.Thread(target=lambda: server.serve_forever(poll_interval=.01), daemon=True)
+    thread.start()
+    base = f'http://127.0.0.1:{server.server_port}/report/' + run.relative_to(app.workspace).as_posix() + '/'
+    try:
+        with urllib.request.urlopen(base + 'overview.html') as response:
+            assert b'Readable report' in response.read()
+        with urllib.request.urlopen(base + 'checks/home/failure-call.png') as response:
+            assert response.headers['Content-Type'] == 'image/png'
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(base + 'secret.json')
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def test_reopening_ui_discovers_active_job(app):
+    gate = threading.Event()
+    job = app.enqueue(lambda: gate.wait(2))
+    try:
+        state = app.state()
+        assert state['active_job']['id'] == job['job']
+        assert state['active_job']['status'] == 'running'
+    finally:
+        gate.set()
+        app.pool.submit(lambda: None).result(timeout=5)
+    assert app.state()['active_job'] is None

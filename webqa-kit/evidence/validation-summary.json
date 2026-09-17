@@ -1,6 +1,6 @@
 {
   "offline_tests": {
-    "passed": 54,
+    "passed": 75,
     "failed": 0
   },
   "ctg_cases_collected": 43,
@@ -33,5 +33,9 @@
     "actual_model_inference": "not executed",
     "rendered_ui": "not executed: managed browser blocked localhost"
   },
-  "usability_update": "0.2.1: labeled page editor, prerequisite buttons, local selection memory, persisted latest results, built-in help; JavaScript syntax checked"
+  "usability_update": "0.2.1: labeled page editor, prerequisite buttons, local selection memory, persisted latest results, built-in help; JavaScript syntax checked",
+  "release": "0.3.0",
+  "streaming_deadline_regressions": "passed with real loopback HTTP server",
+  "screenshot_hook_lifecycle": "passed in actual pytest subprocess with controlled page fixture",
+  "reporting": "fallbacks, ID validation, HTML escaping, inline fixture PNGs, and outcome preservation passed"
 }

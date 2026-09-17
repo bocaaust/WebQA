@@ -32,7 +32,8 @@ outcome after interaction. Do not submit forms, access authentication/admin rout
 click application links, disable accessibility checks, or use real personal data.
 For fills, use a synthetic test_data key. You cannot choose its actual value.
 Prefer accessible roles and labels; scope locators to disambiguate. Return the FULL
-replacement test list for a revision. Keep the list focused, with priority and why.
+replacement test list for a revision. For new requests, prefer 1–3 focused tests.
+Keep explanations short. Use the current plan as the source of truth for revisions.
 """
 
 TEST_DATA = {"name": "WebQA Synthetic Test", "organization": "Example Test Organization",
@@ -189,10 +190,15 @@ def propose(config_path, request_text, model, out, db, existing=None, run_dir=No
     with connect(db) as conn:
         rows = conn.execute("SELECT case_id,decision,resolution FROM reviews WHERE site=? ORDER BY id DESC LIMIT 30",
                             (key,)).fetchall()
-    packet = {"request": request_text, "profile": config, "current_plan": old,
-              "current_pytest": original_source, "history": history(db, key),
+    compact_profile = {k: config[k] for k in ("id", "base_url", "viewports")}
+    compact_profile["pages"] = [{k: v for k, v in p.items() if k not in {"why", "checks", "viewports"}}
+                                for p in config["pages"]]
+    compact_profile["journeys"] = [{k: v for k, v in j.items() if k not in {"why", "priority"}}
+                                   for j in config.get("journeys", [])]
+    packet = {"request": request_text, "profile": compact_profile, "current_plan": old,
+              "history": history(db, key)[:30],
               "human_reviews": [{"case_id": c, "decision": d, "resolution": r} for c, d, r in rows],
-              "synthetic_data": TEST_DATA, "output_schema": plan_schema()}
+              "synthetic_data_keys": list(TEST_DATA)}
     if run_dir:
         meta = json.loads((Path(run_dir) / "run.json").read_text())
         if meta["site_key"] != key:

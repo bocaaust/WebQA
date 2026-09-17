@@ -2,7 +2,7 @@
 
 On-demand public website testing with Python, pytest, Playwright, and axe-core. Configure a target in JSON, run a small serial suite locally or from GitHub Actions, inspect the report, and retain reviewed failure history for better guidance next time.
 
-**Version 0.2.1 is a GitHub-ready local app and CLI product.** It is not a hosted multi-tenant service. No GitHub repository or PyPI release has been published by this delivery. The distribution name is a project name, not a claim of registry availability.
+**Version 0.3.0 is a GitHub-ready local app and CLI product.** It is not a hosted multi-tenant service. No GitHub repository or PyPI release has been published by this delivery. The distribution name is a project name, not a claim of registry availability.
 
 ## Start with the local app
 
@@ -34,7 +34,7 @@ webqa run --config profiles/ctg.json --suite full --headed
 
 `run` is the explicit on-demand action. It opens a browser and sends normal page and asset requests. There are no scheduled production runs, parallel workers, automatic retries, form submissions, load tests, or penetration tests. Configure only public pages you are authorized to test.
 
-To install from the provided wheel instead, run `python -m pip install dist/webqa_kit-0.2.1-py3-none-any.whl`, then install Chromium. To create a CTG profile outside this repository, run `webqa init --preset ctg --out ctg.json`.
+To install from the provided wheel instead, run `python -m pip install dist/webqa_kit-0.3.0-py3-none-any.whl`, then install Chromium. To create a CTG profile outside this repository, run `webqa init --preset ctg --out ctg.json`.
 
 ## Target another website
 
@@ -87,7 +87,10 @@ Each run gets its own `reports/<site>/<timestamp>-<id>/` directory containing:
 
 - `report.html`, `junit.xml`, and `results.json`: human and machine-readable results.
 - `profile.json` and `run.json`: target, exact expectations, selected browser, version, and execution metadata.
-- `browser/`: screenshots and Playwright traces retained for failing browser tests.
+- `overview.html`: readable report with inline screenshots and optional LLM explanations.
+- `failure-report.json`: structured failure cards and explanation source.
+- `checks/*/failure-*.json` and `.png`: assertion evidence, viewport capture, and up to three element captures.
+- `browser/`: original Playwright failure screenshots and traces.
 - `checks/<case>/axe*.json`: full axe results, including violations and incomplete checks.
 - `checks/<case>/blocked-requests.json`: blocked request metadata, without payloads or query strings.
 - `guidance.json` and `guidance-prompt.txt`: deterministic triage and optional LLM context.
@@ -149,7 +152,7 @@ python -m build
 
 The CTG profile expands into **43 cases**, including **12 journeys**. See [scenario-by-scenario rationale](docs/SCENARIOS.md), [assumptions and gaps](docs/ASSUMPTIONS.md), [interview preparation](docs/INTERVIEW_GUIDE.md), and [execution evidence](evidence/README.md).
 
-**Delivery validation:** 54 offline unit tests passed; all 43 CTG cases collected; live connected-browser probes recorded 8 successful observations/checks and 2 accessibility findings. The packaged Python browser suite, mobile checks, axe scans, cross-browser matrix, GitHub workflow, and actual LLM inference have not been executed end to end here. Run the commands above before presenting a full-suite result. Known structural findings remain strict failures; no blanket baseline or xfail hides them.
+**Delivery validation:** 75 offline tests passed; all 43 CTG cases collected; live connected-browser probes recorded 8 successful observations/checks and 2 accessibility findings. The packaged Python browser suite, mobile checks, axe scans, cross-browser matrix, GitHub workflow, and actual LLM inference have not been executed end to end here. Run the commands above before presenting a full-suite result. Known structural findings remain strict failures; no blanket baseline or xfail hides them.
 
 ## Scope and next versions
 
@@ -159,8 +162,27 @@ Next: execute and stabilize the browser suite in CI, validate browser coverage a
 
 Source code is MIT licensed. Bundled axe-core retains its MPL-2.0 license; see `THIRD_PARTY_NOTICES.md`.
 
-## Usability update (0.2.1)
+## Usability update (0.3.0)
 
 After one-time setup, use the desktop launcher and the local app. Page addresses and expected headings have separate labeled fields. The app remembers your selected website and model, restores each website’s latest completed result, explains result categories in plain language, and enables actions when their prerequisites are ready. Built-in help covers normal use and common setup problems. No terminal commands or code editing are needed for ordinary use.
 
 This release adds offline regression coverage for persisted results and website isolation. The local UI has not been visually validated in this environment; the setup helper should complete the acceptance checks in Start Here.
+
+## AI reliability and illustrated reports (0.3.0)
+
+The v0.2.x non-streaming 180-second request could expire during model loading or generation. This release streams Ollama responses, displays progress and elapsed time, removes duplicated schema/generated-source context, defaults to a 600-second absolute deadline, and supports up to 1200 seconds. It caps generated output at 4096 tokens, disables optional thinking, retains model warmth for ten minutes, and asks for 1–3 tests on new requests. Small prompts use an 8192-token context; larger prompts use 16384. Oversized prompts and incomplete answers fail explicitly; there is no automatic unbounded retry or automatic application of partial code.
+
+The app can automatically explain failures with the selected local model. Reports are saved before inference and stay usable if the model fails. Each card includes what happened, why it matters, and what to do. The model receives bounded assertion messages, rule metadata, and test context; basic redaction is applied to common secrets and email addresses. Screenshots, full HTML, and raw stack traces are not sent. Screenshots are evidence for the reader, not visual model analysis. AI covers the first twelve failed checks per request; additional failures retain rule-based explanations. All original outcomes remain unchanged.
+
+Screenshot capture runs before page teardown. It records a viewport image and attempts up to three close-ups from axe targets, known semantic/image selectors, or a journey’s current locator. Form inputs are masked in these report images. A browser launch failure, detached element, off-screen target, or closed page can prevent a capture; the report states when an image is unavailable. Original Playwright artifacts may have different masking behavior and should be reviewed before sharing.
+
+```bash
+webqa run --config profiles/ctg.json --model YOUR_INSTALLED_MODEL --ai-timeout 1200
+webqa develop --config profiles/ctg.json --request "Create 1–3 accessibility checks" --model YOUR_INSTALLED_MODEL --ai-timeout 1200 --out proposals/new-request
+```
+
+The same deadline setting appears as **How long may AI work?** in the local app. Upgrade instructions are in `docs/START_HERE.md`. UI version 0.3.0 confirms that the new package is running.
+
+Validation includes real loopback HTTP tests for streaming, pre-response stalls, mid-stream stalls, a continuously responding server exceeding the deadline, missing models, truncated output, and report fallbacks. A real pytest subprocess verifies capture timing with a controlled page fixture. These tests do not claim successful inference on your installed model or live screenshot capture in this environment. The control-browser skill restricts browser execution to the managed browser, whose localhost access was blocked; rendered UI and full browser acceptance remain to be run on the installation computer.
+
+API references: [Ollama chat](https://docs.ollama.com/api/chat), [streaming](https://docs.ollama.com/capabilities/streaming).

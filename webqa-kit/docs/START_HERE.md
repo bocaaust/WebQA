@@ -2,6 +2,15 @@
 
 WebQA checks public websites and explains what needs attention. After setup, you can use its local app without editing code, JSON, or test files.
 
+## Upgrade from v0.2.x
+
+1. Stop the old app by pressing Control+C in its launch window.
+2. Extract the new ZIP into a new folder. Keep the old folder until you confirm the update works.
+3. Run the new folder’s Setup-WebQA launcher once. On Mac, open Terminal, type `cd ` (including the space), drag the new `webqa-kit` folder into Terminal, press Return, then run `bash Setup-WebQA.command`.
+4. Launch the new folder’s Start-WebQA launcher (`bash Start-WebQA.command` on Mac). The header should say **0.3.0**.
+5. Saved websites and tests in your home folder’s **WebQA** folder remain available. Do not delete that folder. Ollama and downloaded models do not need reinstalling.
+6. Select your existing model, choose a ten- or twenty-minute AI wait, and first request 1–3 tests. Run a new website check to capture screenshots; old runs cannot gain screenshots retroactively.
+
 ## One-time setup
 
 A technical helper should do this once on the computer you will use:
@@ -22,7 +31,7 @@ python -m playwright install chromium
 webqa ui
 ```
 
-On Windows, activation is `.venv\Scripts\Activate.ps1`. Model installation is a separate one-time step using Ollama's interface or `ollama pull MODEL_NAME`. Choose an installed model in WebQA; no model name must be typed during ordinary use. Local inference speed and memory requirements depend on that model and the computer. The application allows up to three minutes per model request.
+On Windows, activation is `.venv\Scripts\Activate.ps1`. Model installation is a separate one-time step using Ollama's interface or `ollama pull MODEL_NAME`. Choose an installed model in WebQA; no model name must be typed during ordinary use. Local inference speed and memory requirements depend on that model and the computer. The default AI wait time is ten minutes. Choose five, ten, or twenty minutes in the app. Loading a model for the first time may be slow. Requests stream progress. Refreshing the browser reconnects to a running task as long as the launch window stays open. Requests have a bounded output size; start by asking for 1–3 tests.
 
 ## Open the app
 
@@ -36,7 +45,8 @@ Your saved websites, tests, reports, and learning history live in the **WebQA** 
 2. CTG has a prepared set of 43 checks. A new website starts with homepage accessibility checks. To include another page, select **Add a page**, enter its address (for example `/contact`), and optionally enter its expected heading in the separate field. Use **Remove this page** to undo an addition. No special formatting is needed.
 3. Choose **Accessibility**, **All configured checks**, or **Small-screen checks**. **Essential visitor journeys** needs a prepared profile with business expectations.
 4. Select **Check website** and wait for the result. Only one task runs at a time.
-5. Read the result: **passed**, **needs attention**, **could not run**, or **not checked**. Select **Open full report** for details. A failing check can indicate a website defect, an outdated expectation, or a setup problem; investigate before changing the test.
+5. When a model is selected, **Explain failures automatically after a check** adds plain-language explanations to failed checks. The app saves results first and shows progress while AI works. You can switch this option off.
+6. Read the result: **passed**, **needs attention**, **could not run**, or **not checked**. Select **Open full report** for details. Each failed check includes **What happened**, **Why it matters**, and **What to do**. A failing check can indicate a website defect, an outdated expectation, or a setup problem; investigate before changing the test. Screenshots show the page and up to three affected elements where available. **Download report with screenshots** saves a portable HTML report that you can share with your website team.
 
 Checks visit only included public pages and use ordinary browser requests. They do not submit contact forms or applications. A clean result does not establish full accessibility conformance.
 
@@ -53,13 +63,13 @@ Example request: “Check that a visitor can open Contact from the main menu, re
 
 ## Improve existing tests
 
-Choose **Improve existing AI tests**, describe the intended change, and select **Prepare tests**. The assistant receives the existing test plan, current pytest code, site profile, previous outcomes, and review notes. Review added, changed, and removed scenarios before selecting **Use these tests**. Previous files are backed up with the proposal. A stale proposal cannot overwrite a more recent edit.
+Choose **Improve existing AI tests**, describe the intended change, and select **Prepare tests**. The assistant receives the existing test plan, a compact site profile, previous outcomes, and review notes. Review added, changed, and removed scenarios before selecting **Use these tests**. Previous files are backed up with the proposal. A stale proposal cannot overwrite a more recent edit.
 
 This workflow supports tests managed by WebQA. Arbitrary third-party Python test files need a developer to translate them into the supported plan format.
 
 ## Help the assistant learn
 
-After a run, use **Explain latest result** for model guidance. In **Teach the assistant what you confirmed**, select a check, record whether you confirmed or rejected the finding, and describe the verified reason. These notes inform future guidance and proposals for that website. They do not train model weights or change pass/fail decisions.
+After a run, use **Explain latest result** to add or retry AI explanations in the illustrated report. The text model receives bounded failure evidence; it does not visually analyze the screenshots. If it cannot complete, rule-based explanations and screenshots remain available. In **Teach the assistant what you confirmed**, select a check, record whether you confirmed or rejected the finding, and describe the verified reason. These notes inform future guidance and proposals for that website. They do not train model weights or change pass/fail decisions.
 
 Use facts and keep private information out of requests and review notes. Test failures alone do not tell the assistant what the correct behavior should be.
 
@@ -70,7 +80,7 @@ The app includes **Help with your next step**, with expandable explanations and 
 | Message or situation | What to do |
 |---|---|
 | No local model is ready | Start Ollama, then select Refresh models. Ask your setup helper to install a model if the list stays empty. Website checks still work. |
-| AI request times out | Use a smaller installed model or ask your helper to inspect Ollama. Existing tests stay unchanged. |
+| AI request times out | Select a longer AI wait time, choose a smaller installed model, or ask for only 1–3 tests. If it still fails, share the exact message plus the model name and Mac memory with your setup helper. Existing tests stay unchanged; completed reports remain available. |
 | No checks matched | Choose All configured checks or Accessibility. New website profiles have no business smoke tests yet. |
 | Browser executable missing | Ask the helper to rerun browser installation from the setup instructions. |
 | Managed pytest profile changed | Describe the intended change using Improve existing AI tests, review it, and apply the new proposal. |

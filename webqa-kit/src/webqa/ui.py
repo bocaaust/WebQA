@@ -1,4 +1,5 @@
 """Local, single-user app. Standard library only; never listens on a public interface."""
+import copy
 import hashlib
 import json
 import re
@@ -6,6 +7,7 @@ import secrets
 import subprocess
 import sys
 import threading
+import time
 import urllib.request
 import uuid
 import webbrowser
@@ -17,7 +19,9 @@ from urllib.parse import parse_qs, urlsplit
 
 from webqa.authoring import apply_proposal, propose
 from webqa.config import load_profile, origin, validate_profile
-from webqa.learning import advise, review
+from webqa.learning import review
+from webqa.llm import model_request, progress
+from webqa.reporting import build_report
 
 
 class LocalApp:
@@ -90,7 +94,10 @@ class LocalApp:
                                  for p in config["pages"] if p["path"] != "/" or p.get("h1_contains")),
                              "has_tests": (path.parent / "test_custom.py").exists(),
                              "latest_result": self.latest_result(path.parent)})
-        return {"websites": websites, "workspace": str(self.workspace)}
+        with self.lock:
+            active = next(({"id": key, **copy.deepcopy(value)} for key, value in self.jobs.items()
+                           if value["status"] == "running"), None)
+        return {"websites": websites, "workspace": str(self.workspace), "active_job": active}
 
     def latest_result(self, target):
         saved = target / "latest-result.json"
@@ -101,18 +108,40 @@ class LocalApp:
         except (OSError, ValueError):
             return None
 
-    def enqueue(self, fn):
+    def publish_result(self, target, result):
+        (target / "latest-result.json").write_text(json.dumps(result), encoding="utf-8")
+        with self.lock:
+            self.jobs[self.active_job]["preview"] = copy.deepcopy(result)
+
+    def attach_report(self, result, run, report):
+        prefix = "/report/" + run.relative_to(self.workspace).as_posix() + "/"
+        result["report"] = prefix + "overview.html"
+        result["ai_status"] = report["ai_status"]
+        result["failures"] = [{**f, "screenshots": [{**shot, "url": prefix + shot["file"]}
+                                                  for shot in f.get("screenshots", [])]}
+                              for f in report["failures"]]
+        return result
+
+    def enqueue(self, fn, ai_timeout=600, site_id=None):
+        if not isinstance(ai_timeout, int) or not 1 <= ai_timeout <= 1200:
+            raise ValueError("Choose an AI wait time between 1 and 1200 seconds")
         with self.lock:
             if any(job["status"] == "running" for job in self.jobs.values()):
                 raise ValueError("A task is already running. Wait for its result before starting another.")
             job_id = uuid.uuid4().hex
-            self.jobs[job_id] = {"status": "running", "message": "Working. You can leave this window open."}
+            self.jobs[job_id] = {"status": "running", "message": "Working. You can leave this window open.", "started": time.time(), "site": site_id}
             if len(self.jobs) > 30:
                 del self.jobs[next(iter(self.jobs))]
 
+        def update(message):
+            with self.lock:
+                self.jobs[job_id]["message"] = message
+
         def work():
+            self.active_job = job_id
             try:
-                result = {"status": "done", "result": fn()}
+                with model_request(ai_timeout, update):
+                    result = {"status": "done", "result": fn()}
             except Exception as exc:
                 result = {"status": "error", "message": f"{exc}. Your existing tests were not automatically changed."}
             with self.lock:
@@ -120,7 +149,7 @@ class LocalApp:
         self.pool.submit(work)
         return {"job": job_id}
 
-    def run(self, site_id, suite="accessibility", custom=False):
+    def run(self, site_id, suite="accessibility", custom=False, model=None, ai_timeout=600):
         target = self.site(site_id)
         if suite not in {"full", "smoke", "accessibility", "mobile"}:
             raise ValueError("Choose a valid check type")
@@ -131,6 +160,7 @@ class LocalApp:
             command += ["--tests", str(target / "test_custom.py")]
 
         def task():
+            progress("Checking the website and capturing failure evidence…")
             completed = subprocess.run(command, capture_output=True, text=True, timeout=1200, check=False)
             runs = list(run_root.glob("*/*/run.json"))
             if not runs:
@@ -145,11 +175,16 @@ class LocalApp:
                     "cases": [{"id": t["nodeid"].split("[")[-1].rstrip("]"), "outcome": t["outcome"]}
                               for t in results.get("tests", [])],
                     "log": (completed.stdout + completed.stderr)[-14000:]}
-            (target / "latest-result.json").write_text(json.dumps(result), encoding="utf-8")
+            if (run / "results.json").exists():
+                self.attach_report(result, run, build_report(run))
+                self.publish_result(target, result)
+                if model:
+                    self.attach_report(result, run, build_report(run, model))
+            self.publish_result(target, result)
             return result
-        return self.enqueue(task)
+        return self.enqueue(task, ai_timeout, site_id)
 
-    def author(self, site_id, request_text, model, revise=False):
+    def author(self, site_id, request_text, model, revise=False, ai_timeout=600):
         target = self.site(site_id)
         proposal_id = uuid.uuid4().hex
         out = target / "proposals" / proposal_id
@@ -167,7 +202,7 @@ class LocalApp:
                     "tests": [{"id": t["id"], "why": t["why"], "priority": t["priority"]}
                               for t in record["plan"]["tests"]],
                     "diff": (out / "changes.diff").read_text()}
-        return self.enqueue(task)
+        return self.enqueue(task, ai_timeout, site_id)
 
     def apply(self, site_id, proposal_id):
         target = self.site(site_id)
@@ -176,13 +211,21 @@ class LocalApp:
         apply_proposal(target / "proposals" / proposal_id, target / "profile.json", target / "test_custom.py")
         return {"message": "Tests saved. Use Run AI tests when you are ready to check the website."}
 
-    def explain(self, site_id, model):
+    def explain(self, site_id, model, ai_timeout=600):
         target = self.site(site_id)
         latest = target / "latest-run.json"
         if not latest.exists():
             raise ValueError("Run a website check first")
         run_dir = Path(json.loads(latest.read_text())["path"])
-        return self.enqueue(lambda: {"kind": "advice", "guidance": advise(self.db, run_dir, model)})
+
+        def task():
+            result = self.latest_result(target)
+            if not result:
+                raise ValueError("Run a new check to prepare a report with screenshots")
+            self.attach_report(result, run_dir, build_report(run_dir, model))
+            self.publish_result(target, result)
+            return result
+        return self.enqueue(task, ai_timeout, site_id)
 
     def feedback(self, site_id, case_id, decision, resolution):
         target = self.site(site_id)
@@ -229,9 +272,13 @@ def handler(app, token):
                 return self.send(200, html, "text/html; charset=utf-8")
             if parsed.path.startswith("/report/"):
                 path = (app.workspace / parsed.path[len("/report/"):]).resolve()
-                if not path.is_relative_to(app.workspace) or path.name != "report.html" or not path.is_file():
+                allowed = path.name in {"report.html", "overview.html"} or (
+                    path.suffix == ".png" and path.name.startswith("failure-") and path.parent.parent.name == "checks")
+                relative = path.relative_to(app.workspace).parts if path.is_relative_to(app.workspace) else ()
+                if not allowed or len(relative) < 7 or relative[0] != "sites" or relative[2] != "reports" or not path.is_file():
                     return self.send(404, b"Report unavailable", "text/plain")
-                return self.send(200, path.read_bytes(), "text/html; charset=utf-8")
+                mime = "image/png" if path.suffix == ".png" else "text/html; charset=utf-8"
+                return self.send(200, path.read_bytes(), mime)
             if self.headers.get("X-WebQA-Token") != token:
                 return self.send(403, b'{"error":"Please reopen the app"}')
             if parsed.path == "/api/state":
@@ -260,16 +307,17 @@ def handler(app, token):
                             raise ValueError("Wait for the active task before changing a website")
                         result = app.save_site(data["url"], data.get("pages", ""))
                 elif self.path == "/api/run":
-                    result = app.run(data["site"], data.get("suite", "accessibility"), data.get("custom", False))
+                    result = app.run(data["site"], data.get("suite", "accessibility"), data.get("custom", False),
+                                     data.get("model"), data.get("ai_timeout", 600))
                 elif self.path == "/api/author":
-                    result = app.author(data["site"], data["request"], data["model"], data.get("revise", False))
+                    result = app.author(data["site"], data["request"], data["model"], data.get("revise", False), data.get("ai_timeout", 600))
                 elif self.path == "/api/apply":
                     with app.lock:
                         if any(j["status"] == "running" for j in app.jobs.values()):
                             raise ValueError("Wait for the active task before applying changes")
                         result = app.apply(data["site"], data["proposal"])
                 elif self.path == "/api/explain":
-                    result = app.explain(data["site"], data["model"])
+                    result = app.explain(data["site"], data["model"], data.get("ai_timeout", 600))
                 elif self.path == "/api/review":
                     result = app.feedback(data["site"], data["case"], data["decision"], data["resolution"])
                 else:

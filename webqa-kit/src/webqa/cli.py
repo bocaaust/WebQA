@@ -42,6 +42,8 @@ def parser():
     run.add_argument("--config", type=Path, required=True)
     run.add_argument("--suite", choices=["full", "smoke", "accessibility", "mobile"], default="full")
     run.add_argument("--browser", choices=["chromium", "firefox", "webkit"], default="chromium")
+    run.add_argument("--model", help="Optional local model for plain-language failure reports")
+    run.add_argument("--ai-timeout", type=int, default=600, help="AI deadline in seconds (1–1200)")
     run.add_argument("--headed", action="store_true")
     run.add_argument("--collect-only", action="store_true", help="Validate pytest collection without opening a browser")
     run.add_argument("--out", type=Path, default=Path("reports"))
@@ -51,6 +53,7 @@ def parser():
     for name in ["develop", "revise"]:
         cmd = commands.add_parser(name, help="Ask the local LLM to propose a managed pytest module")
         cmd.add_argument("--config", type=Path, required=True)
+        cmd.add_argument("--ai-timeout", type=int, default=600, help="AI deadline in seconds (1–1200)")
         cmd.add_argument("--request", required=True, help="Describe the desired behavior in plain language")
         cmd.add_argument("--model", required=True, help="Installed local Ollama model")
         cmd.add_argument("--out", type=Path, required=True, help="New proposal directory")
@@ -134,6 +137,10 @@ def run_suite(args):
     if not args.collect_only and (out / "results.json").exists():
         ingest(args.db, out)
         advise(args.db, out)
+        from webqa.reporting import build_report
+        from webqa.llm import model_request
+        with model_request(args.ai_timeout):
+            build_report(out, args.model)
     print(f"Report directory: {out}")
     return completed.returncode
 
@@ -166,8 +173,10 @@ def main(argv=None):
         elif args.command == "run":
             return run_suite(args)
         elif args.command in {"develop", "revise"}:
-            result = propose(args.config, args.request, args.model, args.out, args.db,
-                             getattr(args, "test", None), args.run)
+            from webqa.llm import model_request
+            with model_request(args.ai_timeout, lambda message: print(message, flush=True)):
+                result = propose(args.config, args.request, args.model, args.out, args.db,
+                                 getattr(args, "test", None), args.run)
             print(json.dumps(result, indent=2))
             print(f"Proposal: {args.out}. Review changes.diff and validation.json before applying.")
         elif args.command == "apply":

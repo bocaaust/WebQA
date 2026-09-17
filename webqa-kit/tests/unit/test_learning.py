@@ -1,5 +1,4 @@
 import json
-from contextlib import contextmanager
 
 import pytest
 
@@ -49,19 +48,9 @@ def test_optional_model_transport_and_unknown_case_rejection(tmp_path, monkeypat
     db = tmp_path / "history.sqlite3"
     run = write_run(tmp_path / "run", "r1", "site-a", {"home": "failed"})
     ingest(db, run)
-    import io
-    import webqa.llm as llm
     reply = {"summary": "Review evidence", "suggestions": [{"case_id": "home", "hypothesis": "Possible regression",
               "next_check": "Inspect the trace", "confidence": "low"}]}
-
-    @contextmanager
-    def fake_urlopen(request, timeout):
-        assert request.full_url == "http://127.0.0.1:11434/api/chat"
-        payload = json.loads(request.data)
-        assert payload["stream"] is False and payload["model"] == "installed-model"
-        yield io.StringIO(json.dumps({"message": {"content": json.dumps(reply)}}))
-
-    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr("webqa.learning.chat", lambda *_: reply)
     assert advise(db, run, "installed-model")["advisory_only"] is True
     reply["suggestions"][0]["case_id"] = "invented"
     with pytest.raises(ValueError, match="outside"):

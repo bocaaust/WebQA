@@ -75,6 +75,7 @@ def page_check(page, spec, check, output):
 
 def journey_check(page, journey, config, output):
     for number, step in enumerate(journey["steps"], start=1):
+        (output / "active-step.json").write_text(json.dumps({"number": number, "step": step}), encoding="utf-8")
         action = step["action"]
         locator = locate(page, step["locator"]) if "locator" in step else None
         if action in {"click", "press"}:
