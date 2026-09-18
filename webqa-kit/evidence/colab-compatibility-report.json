@@ -1,0 +1,123 @@
+{
+  "api_probes": {},
+  "failures": [],
+  "import_probes": {},
+  "import_roots": [
+    "google",
+    "json",
+    "os",
+    "pathlib",
+    "subprocess",
+    "sys",
+    "venv"
+  ],
+  "imports": [
+    "google.colab",
+    "json",
+    "os",
+    "pathlib",
+    "subprocess",
+    "sys",
+    "venv"
+  ],
+  "in_colab": false,
+  "manifest": "/workspace/scratch/18bcb6a824a7/webqa-kit/notebooks/compatibility-manifest.json",
+  "notebook": "/workspace/scratch/18bcb6a824a7/webqa-kit/notebooks/WebQA_Cloud_LLM.ipynb",
+  "notebook_sha256": "a53f537cc89ed8f5c5842c683b0fad9048f68367da5f18e6e73b40986c978502",
+  "pip_check": {
+    "all_conflicts": [
+      "No broken requirements found."
+    ],
+    "relevant_conflicts": [],
+    "returncode": 0,
+    "status": "pass"
+  },
+  "python": "3.12.14",
+  "python_specifier": "<3.14,>=3.12",
+  "python_status": "pass",
+  "requirements": [
+    {
+      "distribution": "pip",
+      "installed": "25.0.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==25.0.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "packaging",
+      "installed": "25.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==25.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "attrs",
+      "installed": "26.1.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==26.1.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "jsonschema",
+      "installed": "4.25.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==4.25.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "jsonschema-specifications",
+      "installed": "2025.9.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==2025.9.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "referencing",
+      "installed": "0.37.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==0.37.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "rpds-py",
+      "installed": "2026.6.3",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==2026.6.3",
+      "status": "pass"
+    },
+    {
+      "distribution": "typing_extensions",
+      "installed": "4.16.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==4.16.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "zstandard",
+      "installed": "0.23.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==0.23.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "google-colab",
+      "installed": null,
+      "provider": "pip",
+      "required": false,
+      "specifier": "",
+      "status": "pass"
+    }
+  ],
+  "status": "pass",
+  "syntax_errors": [],
+  "unmapped_imports": []
+}

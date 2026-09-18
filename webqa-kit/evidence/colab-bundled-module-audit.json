@@ -1,0 +1,191 @@
+{
+  "api_probes": {},
+  "failures": [],
+  "import_probes": {
+    "jsonschema": {
+      "returncode": 0,
+      "seconds": 0.101,
+      "status": "pass",
+      "stderr": "",
+      "stdout": ""
+    },
+    "zstandard": {
+      "returncode": 0,
+      "seconds": 0.02,
+      "status": "pass",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "import_roots": [
+    "argparse",
+    "contextlib",
+    "contextvars",
+    "copy",
+    "datetime",
+    "difflib",
+    "google",
+    "hashlib",
+    "http",
+    "importlib",
+    "ipaddress",
+    "json",
+    "jsonschema",
+    "os",
+    "pathlib",
+    "platform",
+    "pprint",
+    "re",
+    "shutil",
+    "socket",
+    "sqlite3",
+    "subprocess",
+    "sys",
+    "tarfile",
+    "threading",
+    "time",
+    "urllib",
+    "venv",
+    "webqa",
+    "zstandard"
+  ],
+  "imports": [
+    "argparse",
+    "contextlib",
+    "contextvars",
+    "copy",
+    "datetime",
+    "difflib",
+    "google.colab",
+    "hashlib",
+    "http.client",
+    "importlib.metadata",
+    "importlib.resources",
+    "ipaddress",
+    "json",
+    "jsonschema",
+    "os",
+    "pathlib",
+    "platform",
+    "pprint",
+    "re",
+    "shutil",
+    "socket",
+    "sqlite3",
+    "subprocess",
+    "sys",
+    "tarfile",
+    "threading",
+    "time",
+    "urllib.parse",
+    "urllib.request",
+    "venv",
+    "webqa",
+    "webqa.authoring",
+    "webqa.cloud_protocol",
+    "webqa.config",
+    "webqa.learning",
+    "webqa.llm",
+    "zstandard"
+  ],
+  "in_colab": false,
+  "manifest": "/workspace/scratch/18bcb6a824a7/webqa-kit/notebooks/compatibility-manifest.json",
+  "notebook": "/tmp/webqa-module-audit.ipynb",
+  "notebook_sha256": "f08768916e26df28e48a78baa21a94ec13e2efb0dc70f6262cce9a252ec9629e",
+  "pip_check": {
+    "all_conflicts": [
+      "No broken requirements found."
+    ],
+    "relevant_conflicts": [],
+    "returncode": 0,
+    "status": "pass"
+  },
+  "python": "3.12.14",
+  "python_specifier": "<3.14,>=3.12",
+  "python_status": "pass",
+  "requirements": [
+    {
+      "distribution": "pip",
+      "installed": "25.0.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==25.0.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "packaging",
+      "installed": "25.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==25.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "attrs",
+      "installed": "26.1.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==26.1.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "jsonschema",
+      "installed": "4.25.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==4.25.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "jsonschema-specifications",
+      "installed": "2025.9.1",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==2025.9.1",
+      "status": "pass"
+    },
+    {
+      "distribution": "referencing",
+      "installed": "0.37.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==0.37.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "rpds-py",
+      "installed": "2026.6.3",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==2026.6.3",
+      "status": "pass"
+    },
+    {
+      "distribution": "typing_extensions",
+      "installed": "4.16.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==4.16.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "zstandard",
+      "installed": "0.23.0",
+      "provider": "pip",
+      "required": true,
+      "specifier": "==0.23.0",
+      "status": "pass"
+    },
+    {
+      "distribution": "google-colab",
+      "installed": null,
+      "provider": "pip",
+      "required": false,
+      "specifier": "",
+      "status": "pass"
+    }
+  ],
+  "status": "pass",
+  "syntax_errors": [],
+  "unmapped_imports": []
+}

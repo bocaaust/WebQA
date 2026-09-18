@@ -4,7 +4,7 @@ The evidence types below are deliberately separate.
 
 | Evidence | What was executed | Result | What it does not prove |
 |---|---|---|---|
-| unit-results.json and unit-results.xml | Python pytest checks of configuration, guardrails, history isolation, idempotency, reviews, CLI init, stubbed LLM guidance/authoring, managed pytest collection, revision integrity, and local app HTTP/workflow behavior | 75 passed | Browser behavior or real LLM inference |
+| unit-results.json and unit-results.xml | Python pytest checks of configuration, guardrails, history isolation, idempotency, reviews, CLI init, stubbed LLM guidance/authoring, managed pytest collection, revision integrity, and local app HTTP/workflow behavior | 90 passed | Browser behavior or real LLM inference |
 | collection/ | Installed CLI invoking the packaged pytest suite with --collect-only | 43 CTG cases collected | No browser cases executed; zero live passes claimed |
 | live-browser-checks.json | Ten desktop checks or observations through a connected Chrome browser | 8 successful, 2 findings | Not a run of the shipped Python suite or axe-core |
 | wheel-collection/ | CLI loaded from an installed wheel outside the source folder | 43 cases collected; bundled assets present | Full browser execution |
@@ -19,3 +19,12 @@ Nothing in collection output should be presented as a green browser suite. Run t
 Version 0.2 adds collection-v02/ (43 baseline cases) and authored-collection/ (3 curated managed cases). These remain collection-only. The generated-test and local-app offline workflows use controlled model responses and do not establish real-model quality or live website behavior. The managed browser refused access to the local app, so visual and interactive UI acceptance checks remain unexecuted. Windows/macOS launchers are supplied but were not run on those platforms.
 
 Version 0.3.0 adds actual loopback streaming/deadline tests and a real pytest hook lifecycle test using a controlled page fixture. Fixture PNGs are not website screenshots. No real model inference or live browser screenshot capture is claimed.
+
+
+Version 0.4.0 adds export/import round trips for test creation, revisions, all-failure explanations, and historical guidance; stale/tampered result rejection; duplicate imports; checkpoint resume; and real pytest collection of a cloud-imported module. Model outputs in those tests are controlled fixtures, not actual model inference.
+
+- `colab-compatibility-report.json`: syntax, import mapping, exact-version checks, and dependency consistency for the notebook cells.
+- `colab-bundled-module-audit.json` and `colab-import-inventory.json`: audit of every bundled runtime module, including the shared compiler and transport.
+- `colab-resolver-lock.json`: pip dependency resolution for the pinned notebook environment.
+- `colab-preflight-local.json`, `colab-environment-freeze.txt`, `colab-pip-check.txt`: actual isolated setup cell execution (only the `/content` path relocated), schema/zstd API probes and imports under Python 3.12.14. Colab's Google widgets, GPU allocation, Ollama binary, and model inference were not exercised here.
+- `dashboard-dom-v04.txt`: DOM test of cloud mode with no local model, export, scan, import, review, apply, and enabling the local test run. This is not a rendered browser test.

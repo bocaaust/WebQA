@@ -1,0 +1,1 @@
+{"name":"webqa-dashboard-tests","private":true,"scripts":{"test":"node cloud-dashboard.cjs"},"devDependencies":{"jsdom":"26.1.0"}}

@@ -173,13 +173,10 @@ def changes(old, new):
             "review_note": "Review changed expectations and any loss of coverage; validation is not a live pass."}
 
 
-def propose(config_path, request_text, model, out, db, existing=None, run_dir=None):
+def prepare_request(config_path, request_text, db, existing=None, run_dir=None):
     config = load_profile(config_path)
     if not request_text.strip() or len(request_text) > 12000:
         raise ValueError("Request must contain 1 to 12000 characters")
-    out = Path(out)
-    if out.exists():
-        raise ValueError("Proposal directory exists; use a new directory")
     old, original_source, original_record = None, "", None
     if existing:
         original_record, original_source = load_managed(existing)
@@ -204,14 +201,20 @@ def propose(config_path, request_text, model, out, db, existing=None, run_dir=No
         if meta["site_key"] != key:
             raise ValueError("Failure evidence belongs to another site")
         packet["failure_evidence"] = evidence_packet(db, run_dir)
-    out.mkdir(parents=True)
+    return config, packet
+
+
+def save_plan(config, packet, plan, model, out, existing=None):
+    """Compile local or imported structured output with identical validation and review gates."""
+    out = Path(out)
+    if (out / "proposal.json").exists():
+        raise ValueError("Proposal already exists")
+    original_record, original_source = load_managed(existing) if existing else (None, "")
+    old = original_record["plan"] if original_record else None
+    key = site_key(config)
+    source = compile_module(plan, config)
+    out.mkdir(parents=True, exist_ok=True)
     (out / "prompt.json").write_text(json.dumps({"system": SYSTEM, "input": packet}, indent=2), encoding="utf-8")
-    try:
-        plan = chat(model, SYSTEM, packet, plan_schema())
-        source = compile_module(plan, config)
-    except Exception as exc:
-        (out / "error.txt").write_text(f"No test changes applied. {type(exc).__name__}: {exc}\n", encoding="utf-8")
-        raise
     record = {"format_version": 1, "package_version": __version__, "site_key": key,
               "profile_sha256": profile_digest(config), "profile": config, "plan": plan,
               "model": model, "created": datetime.now(timezone.utc).isoformat()}
@@ -233,6 +236,21 @@ def propose(config_path, request_text, model, out, db, existing=None, run_dir=No
                 "original_filename": Path(existing).name if existing else None}
     (out / "proposal.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return validation
+
+
+def propose(config_path, request_text, model, out, db, existing=None, run_dir=None):
+    out = Path(out)
+    if out.exists():
+        raise ValueError("Proposal directory exists; use a new directory")
+    config, packet = prepare_request(config_path, request_text, db, existing, run_dir)
+    out.mkdir(parents=True)
+    (out / "prompt.json").write_text(json.dumps({"system": SYSTEM, "input": packet}, indent=2), encoding="utf-8")
+    try:
+        plan = chat(model, SYSTEM, packet, plan_schema())
+        return save_plan(config, packet, plan, model, out, existing)
+    except Exception as exc:
+        (out / "error.txt").write_text(f"No test changes applied. {type(exc).__name__}: {exc}\n", encoding="utf-8")
+        raise
 
 
 def apply_proposal(proposal, config_path, destination):

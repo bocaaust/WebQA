@@ -1,6 +1,6 @@
 {
   "offline_tests": {
-    "passed": 75,
+    "passed": 90,
     "failed": 0
   },
   "ctg_cases_collected": 43,
@@ -21,7 +21,8 @@
     "GitHub Actions workflow",
     "actual Ollama inference",
     "rendered local-app acceptance flow",
-    "Windows and macOS launchers"
+    "Windows and macOS launchers",
+    "Colab GPU runtime, native Ollama installation, model inference and Google widgets"
   ],
   "managed_pytest_collection": {
     "collected": 3,
@@ -34,8 +35,11 @@
     "rendered_ui": "not executed: managed browser blocked localhost"
   },
   "usability_update": "0.2.1: labeled page editor, prerequisite buttons, local selection memory, persisted latest results, built-in help; JavaScript syntax checked",
-  "release": "0.3.0",
+  "release": "0.4.0",
   "streaming_deadline_regressions": "passed with real loopback HTTP server",
   "screenshot_hook_lifecycle": "passed in actual pytest subprocess with controlled page fixture",
-  "reporting": "fallbacks, ID validation, HTML escaping, inline fixture PNGs, and outcome preservation passed"
+  "reporting": "fallbacks, ID validation, HTML escaping, inline fixture PNGs, and outcome preservation passed",
+  "cloud_exchange": "four workflow round trips, stale/malformed results, idempotency, and checkpoint resume passed with controlled model outputs",
+  "colab_setup": "actual isolated setup cell and dependency probes passed on Python 3.12.14; Google widgets, GPU/model inference unexecuted",
+  "dashboard_dom": "cloud workflow passed in jsdom; no rendered browser acceptance claimed"
 }

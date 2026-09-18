@@ -10,6 +10,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix tests/ui
+      - run: npm test --prefix tests/ui
       - run: python -m pip install '.[dev]'
       - run: ruff check src tests
       - run: python -m pytest tests/unit --junitxml=unit-results.xml

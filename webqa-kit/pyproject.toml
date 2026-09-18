@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "webqa-kit"
-version = "0.3.0"
+version = "0.4.0"
 description = "On-demand public website testing with Playwright, accessibility checks, and reviewed-history guidance"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,7 +25,7 @@ webqa = "webqa.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-webqa = ["schema.json", "app.html", "profiles/*.json", "suite/pytest.ini", "vendor/*"]
+webqa = ["schema.json", "app.html", "profiles/*.json", "suite/pytest.ini", "vendor/*", "assets/*.ipynb"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]

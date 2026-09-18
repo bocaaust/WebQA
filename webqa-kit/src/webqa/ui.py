@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import os
 import re
 import secrets
 import subprocess
@@ -17,7 +18,11 @@ from importlib.resources import files
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
+from jsonschema import ValidationError
+
 from webqa.authoring import apply_proposal, propose
+from webqa.cloud import CloudExchange
+from webqa.cloud_protocol import read_json
 from webqa.config import load_profile, origin, validate_profile
 from webqa.learning import review
 from webqa.llm import model_request, progress
@@ -25,13 +30,14 @@ from webqa.reporting import build_report
 
 
 class LocalApp:
-    def __init__(self, workspace):
+    def __init__(self, workspace, inbox=None):
         self.workspace = Path(workspace).resolve()
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.db = self.workspace / "history.sqlite3"
         self.pool = ThreadPoolExecutor(max_workers=1)
         self.lock = threading.Lock()
         self.jobs = {}
+        self.cloud = CloudExchange(self.workspace, inbox)
 
     def site(self, site_id):
         if not re.fullmatch(r"site-[a-f0-9]{12}", site_id):
@@ -97,7 +103,7 @@ class LocalApp:
         with self.lock:
             active = next(({"id": key, **copy.deepcopy(value)} for key, value in self.jobs.items()
                            if value["status"] == "running"), None)
-        return {"websites": websites, "workspace": str(self.workspace), "active_job": active}
+        return {"websites": websites, "workspace": str(self.workspace), "active_job": active, "cloud_inbox": str(self.cloud.inbox)}
 
     def latest_result(self, target):
         saved = target / "latest-result.json"
@@ -195,14 +201,42 @@ class LocalApp:
         run_dir = Path(json.loads(latest.read_text())["path"]) if latest.exists() else None
 
         def task():
-            validation = propose(target / "profile.json", request_text, model, out, self.db, existing, run_dir)
-            record = json.loads((out / "test_candidate.plan.json").read_text())
-            return {"kind": "proposal", "proposal": proposal_id, "site": site_id,
-                    "summary": record["plan"]["summary"], "validation": validation,
-                    "tests": [{"id": t["id"], "why": t["why"], "priority": t["priority"]}
-                              for t in record["plan"]["tests"]],
-                    "diff": (out / "changes.diff").read_text()}
+            propose(target / "profile.json", request_text, model, out, self.db, existing, run_dir)
+            return self.proposal_details(site_id, proposal_id)
         return self.enqueue(task, ai_timeout, site_id)
+
+    def proposal_details(self, site_id, proposal_id):
+        if not re.fullmatch(r"[a-f0-9]{32}", proposal_id):
+            raise ValueError("Invalid proposal")
+        out = self.site(site_id) / "proposals" / proposal_id
+        record = read_json(out / "test_candidate.plan.json")
+        return {"kind": "proposal", "proposal": proposal_id, "site": site_id,
+                "summary": record["plan"]["summary"], "validation": read_json(out / "validation.json"),
+                "tests": [{"id": t["id"], "why": t["why"], "priority": t["priority"]} for t in record["plan"]["tests"]],
+                "applied": (out / "applied.json").exists(), "diff": (out / "changes.diff").read_text()}
+
+    def import_cloud(self, filename):
+        imported = self.cloud.import_result(filename)
+        if imported["kind"] == "proposal":
+            return self.proposal_details(imported["site"], imported["proposal"])
+        if imported["kind"] == "run":
+            target = self.site(imported["site"])
+            run = self.workspace / imported["run"]
+            result = self.latest_result(target)
+            self.attach_report(result, run, read_json(run / "failure-report.json"))
+            (target / "latest-result.json").write_text(json.dumps(result), encoding="utf-8")
+            return {**result, "site": imported["site"]}
+        return imported
+
+    def open_inbox(self):
+        folder = str(self.cloud.inbox)
+        if sys.platform == "darwin":
+            subprocess.Popen(["open", folder])
+        elif sys.platform == "win32":
+            os.startfile(folder)
+        else:
+            subprocess.Popen(["xdg-open", folder])
+        return {"message": "Copy the downloaded .webqa-result.json file into this folder, then Scan inbox.", "folder": folder}
 
     def apply(self, site_id, proposal_id):
         target = self.site(site_id)
@@ -270,6 +304,9 @@ def handler(app, token):
             if parsed.path == "/":
                 html = files("webqa").joinpath("app.html").read_text().replace("__TOKEN__", token)
                 return self.send(200, html, "text/html; charset=utf-8")
+            if parsed.path == "/cloud-notebook":
+                notebook = files("webqa").joinpath("assets/WebQA_Cloud_LLM.ipynb").read_bytes()
+                return self.send(200, notebook, "application/x-ipynb+json")
             if parsed.path.startswith("/report/"):
                 path = (app.workspace / parsed.path[len("/report/"):]).resolve()
                 allowed = path.name in {"report.html", "overview.html"} or (
@@ -306,6 +343,21 @@ def handler(app, token):
                         if any(j["status"] == "running" for j in app.jobs.values()):
                             raise ValueError("Wait for the active task before changing a website")
                         result = app.save_site(data["url"], data.get("pages", ""))
+                elif self.path.startswith("/api/cloud/"):
+                    with app.lock:
+                        if any(j["status"] == "running" for j in app.jobs.values()):
+                            raise ValueError("Wait for the current task before importing or exporting cloud work")
+                        if self.path == "/api/cloud/export":
+                            request = app.cloud.export(data["site"], data["operation"], data.get("request", ""))
+                            result = {"request": request, "filename": request["id"] + ".webqa-request.json"}
+                        elif self.path == "/api/cloud/scan":
+                            result = app.cloud.scan()
+                        elif self.path == "/api/cloud/import":
+                            result = app.import_cloud(data["file"])
+                        elif self.path == "/api/cloud/open":
+                            result = app.open_inbox()
+                        else:
+                            raise ValueError("Unknown cloud action")
                 elif self.path == "/api/run":
                     result = app.run(data["site"], data.get("suite", "accessibility"), data.get("custom", False),
                                      data.get("model"), data.get("ai_timeout", 600))
@@ -323,13 +375,14 @@ def handler(app, token):
                 else:
                     return self.send(404, b'{"error":"Not found"}')
                 return self.send(200, json.dumps(result))
-            except (ValueError, OSError, KeyError, TypeError) as exc:
-                return self.send(400, json.dumps({"error": str(exc)}))
+            except (ValueError, OSError, KeyError, TypeError, ValidationError) as exc:
+                message = exc.message if isinstance(exc, ValidationError) else str(exc)
+                return self.send(400, json.dumps({"error": message[:1200]}))
     return Handler
 
 
-def serve(workspace, port=8765, open_browser=True):
-    app = LocalApp(workspace)
+def serve(workspace, port=8765, open_browser=True, inbox=None):
+    app = LocalApp(workspace, inbox)
     server = ThreadingHTTPServer(("127.0.0.1", port), handler(app, secrets.token_urlsafe(32)))
     address = f"http://127.0.0.1:{server.server_port}"
     print(f"WebQA is ready at {address}. Close this window or press Ctrl+C to stop.")

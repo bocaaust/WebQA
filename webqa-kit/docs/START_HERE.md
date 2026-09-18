@@ -2,14 +2,14 @@
 
 WebQA checks public websites and explains what needs attention. After setup, you can use its local app without editing code, JSON, or test files.
 
-## Upgrade from v0.2.x
+## Upgrade from v0.2.x or v0.3.x
 
 1. Stop the old app by pressing Control+C in its launch window.
 2. Extract the new ZIP into a new folder. Keep the old folder until you confirm the update works.
 3. Run the new folder’s Setup-WebQA launcher once. On Mac, open Terminal, type `cd ` (including the space), drag the new `webqa-kit` folder into Terminal, press Return, then run `bash Setup-WebQA.command`.
-4. Launch the new folder’s Start-WebQA launcher (`bash Start-WebQA.command` on Mac). The header should say **0.3.0**.
+4. Launch the new folder’s Start-WebQA launcher (`bash Start-WebQA.command` on Mac). The header should say **0.4.0**.
 5. Saved websites and tests in your home folder’s **WebQA** folder remain available. Do not delete that folder. Ollama and downloaded models do not need reinstalling.
-6. Select your existing model, choose a ten- or twenty-minute AI wait, and first request 1–3 tests. Run a new website check to capture screenshots; old runs cannot gain screenshots retroactively.
+6. Choose local Ollama or Google Colab. For local AI, select your model and a ten- or twenty-minute wait. Start with 1–3 tests. Run a new website check to capture screenshots; old runs cannot gain screenshots retroactively.
 
 ## One-time setup
 
@@ -50,7 +50,19 @@ Your saved websites, tests, reports, and learning history live in the **WebQA** 
 
 Checks visit only included public pages and use ordinary browser requests. They do not submit contact forms or applications. A clean result does not establish full accessibility conformance.
 
-## Ask AI to create tests
+## Use cloud AI in Colab
+
+Choose **Google Colab (file exchange)** under **Where should AI work?** You can export test creation, revision, failure-explanation, or history-guidance requests without installing a model on your computer.
+
+1. Export your request from the dashboard.
+2. Download the included Colab notebook, upload it to Google Colab, select a GPU runtime, and run its five numbered cells.
+3. Upload your request in notebook step 3 and download its result in step 5.
+4. Use **Open inbox folder** in WebQA, copy the result into **Cloud-Inbox**, then click **Scan inbox → Import and review**.
+5. For tests, select **Use these tests → Run AI tests**. Cloud explanations update the matching local report with existing screenshots.
+
+See **docs/CLOUD_COLAB.md** for the full illustrated-report workflow, setup, and troubleshooting. Request files contain selected site context and notes that you choose to share with Colab; screenshots stay local. Do not change website settings or tests between export and import, since stale results are rejected.
+
+## Ask AI to create tests locally
 
 1. Select your website and an installed model.
 2. Select **Create new tests**.

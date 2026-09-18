@@ -1,0 +1,80 @@
+{
+  "python": ">=3.12,<3.14",
+  "requirements": [
+    {
+      "distribution": "pip",
+      "specifier": "==25.0.1",
+      "imports": [
+        "pip"
+      ]
+    },
+    {
+      "distribution": "packaging",
+      "specifier": "==25.0",
+      "imports": [
+        "packaging"
+      ]
+    },
+    {
+      "distribution": "attrs",
+      "specifier": "==26.1.0",
+      "imports": [
+        "attrs"
+      ]
+    },
+    {
+      "distribution": "jsonschema",
+      "specifier": "==4.25.1",
+      "imports": [
+        "jsonschema"
+      ]
+    },
+    {
+      "distribution": "jsonschema-specifications",
+      "specifier": "==2025.9.1",
+      "imports": [
+        "jsonschema_specifications"
+      ]
+    },
+    {
+      "distribution": "referencing",
+      "specifier": "==0.37.0",
+      "imports": [
+        "referencing"
+      ]
+    },
+    {
+      "distribution": "rpds-py",
+      "specifier": "==2026.6.3",
+      "imports": [
+        "rpds"
+      ]
+    },
+    {
+      "distribution": "typing_extensions",
+      "specifier": "==4.16.0",
+      "imports": [
+        "typing_extensions"
+      ]
+    },
+    {
+      "distribution": "zstandard",
+      "specifier": "==0.23.0",
+      "imports": [
+        "zstandard"
+      ]
+    },
+    {
+      "distribution": "google-colab",
+      "specifier": "",
+      "imports": [
+        "google.colab"
+      ],
+      "required_if": "colab"
+    }
+  ],
+  "probes": [],
+  "allow_imports": [
+    "webqa"
+  ]
+}

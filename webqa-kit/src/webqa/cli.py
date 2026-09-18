@@ -68,6 +68,7 @@ def parser():
     ui = commands.add_parser("ui", help="Open the local app for people who prefer buttons to commands")
     ui.add_argument("--port", type=int, default=8765)
     ui.add_argument("--workspace", type=Path, default=Path.home() / "WebQA")
+    ui.add_argument("--inbox", type=Path, default=Path.cwd() / "Cloud-Inbox", help="Folder for Colab result files")
     ui.add_argument("--no-open", action="store_true", help="Do not open the browser automatically")
     for name in ["advise", "review"]:
         cmd = commands.add_parser(name)
@@ -183,7 +184,7 @@ def main(argv=None):
             print(f"Applied {apply_proposal(args.proposal, args.config, args.dest)}. Run it with webqa run --tests.")
         elif args.command == "ui":
             from webqa.ui import serve
-            serve(args.workspace, args.port, not args.no_open)
+            serve(args.workspace, args.port, not args.no_open, args.inbox)
         elif args.command == "advise":
             print(json.dumps(advise(args.db, args.run_dir, args.model), indent=2))
         elif args.command == "review":

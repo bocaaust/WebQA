@@ -6,3 +6,9 @@ recursive-include .github *.yml
 
 include *-WebQA.bat *-WebQA.command
 recursive-include examples *.py *.json
+
+recursive-include notebooks *.ipynb *.json *.lock *.py
+recursive-include scripts *.py
+include Cloud-Inbox/README.txt
+recursive-include tests/ui *.json *.cjs
+prune tests/ui/node_modules

@@ -2,7 +2,7 @@
 
 On-demand public website testing with Python, pytest, Playwright, and axe-core. Configure a target in JSON, run a small serial suite locally or from GitHub Actions, inspect the report, and retain reviewed failure history for better guidance next time.
 
-**Version 0.3.0 is a GitHub-ready local app and CLI product.** It is not a hosted multi-tenant service. No GitHub repository or PyPI release has been published by this delivery. The distribution name is a project name, not a claim of registry availability.
+**Version 0.4.0 is a GitHub-ready local app and CLI product.** It is not a hosted multi-tenant service. No GitHub repository or PyPI release has been published by this delivery. The distribution name is a project name, not a claim of registry availability.
 
 ## Start with the local app
 
@@ -34,7 +34,7 @@ webqa run --config profiles/ctg.json --suite full --headed
 
 `run` is the explicit on-demand action. It opens a browser and sends normal page and asset requests. There are no scheduled production runs, parallel workers, automatic retries, form submissions, load tests, or penetration tests. Configure only public pages you are authorized to test.
 
-To install from the provided wheel instead, run `python -m pip install dist/webqa_kit-0.3.0-py3-none-any.whl`, then install Chromium. To create a CTG profile outside this repository, run `webqa init --preset ctg --out ctg.json`.
+To install from the provided wheel instead, run `python -m pip install dist/webqa_kit-0.4.0-py3-none-any.whl`, then install Chromium. To create a CTG profile outside this repository, run `webqa init --preset ctg --out ctg.json`.
 
 ## Target another website
 
@@ -152,7 +152,7 @@ python -m build
 
 The CTG profile expands into **43 cases**, including **12 journeys**. See [scenario-by-scenario rationale](docs/SCENARIOS.md), [assumptions and gaps](docs/ASSUMPTIONS.md), [interview preparation](docs/INTERVIEW_GUIDE.md), and [execution evidence](evidence/README.md).
 
-**Delivery validation:** 75 offline tests passed; all 43 CTG cases collected; live connected-browser probes recorded 8 successful observations/checks and 2 accessibility findings. The packaged Python browser suite, mobile checks, axe scans, cross-browser matrix, GitHub workflow, and actual LLM inference have not been executed end to end here. Run the commands above before presenting a full-suite result. Known structural findings remain strict failures; no blanket baseline or xfail hides them.
+**Delivery validation:** 90 offline tests passed; all 43 CTG cases collected; live connected-browser probes recorded 8 successful observations/checks and 2 accessibility findings. The packaged Python browser suite, mobile checks, axe scans, cross-browser matrix, GitHub workflow, and actual LLM inference have not been executed end to end here. Run the commands above before presenting a full-suite result. Known structural findings remain strict failures; no blanket baseline or xfail hides them.
 
 ## Scope and next versions
 
@@ -186,3 +186,13 @@ The same deadline setting appears as **How long may AI work?** in the local app.
 Validation includes real loopback HTTP tests for streaming, pre-response stalls, mid-stream stalls, a continuously responding server exceeding the deadline, missing models, truncated output, and report fallbacks. A real pytest subprocess verifies capture timing with a controlled page fixture. These tests do not claim successful inference on your installed model or live screenshot capture in this environment. The control-browser skill restricts browser execution to the managed browser, whose localhost access was blocked; rendered UI and full browser acceptance remain to be run on the installation computer.
 
 API references: [Ollama chat](https://docs.ollama.com/api/chat), [streaming](https://docs.ollama.com/capabilities/streaming).
+
+## Colab file exchange (0.4.0)
+
+Choose Google Colab in the dashboard to export create, revise, explain, or history-guidance requests. The self-contained `notebooks/WebQA_Cloud_LLM.ipynb` processes them on a Colab GPU and downloads data-only result files. Copy those into `Cloud-Inbox` in the app folder, scan, and import. Imported plans are compiled locally using the same validation as local AI and require review/apply before running. Request snapshots, source hashes, exact job matching, and persisted receipts prevent stale overwrites and duplicate proposals. Cloud explanations retain local screenshots and original outcomes.
+
+The CLI’s `webqa ui --inbox /path/to/Cloud-Inbox` can override the drop folder. The default is `Cloud-Inbox` under the launch directory; supplied launchers first enter the app folder. Pending requests remain under the chosen workspace (normally `~/WebQA/cloud/requests`). Keep that workspace across upgrades. There is no public API tunnel, cloud browser execution, or automatic execution of downloaded Python.
+
+See `docs/CLOUD_COLAB.md` for the user workflow and limitations. The notebook is bundled in the wheel and downloadable from the dashboard. Rebuild it after changing shared modules with `python scripts/build_colab_notebook.py`; the notebook regression test rejects stale embedded code.
+
+Developer UI test: `npm ci --prefix tests/ui`, then `npm test --prefix tests/ui`. These DOM tests simulate API responses and do not substitute for rendered browser testing. Colab dependency lock/audit/preflight evidence is in `notebooks/` and `evidence/colab-*`. The actual GPU/model and Google widgets require an acceptance run on Colab; no such run is claimed here.

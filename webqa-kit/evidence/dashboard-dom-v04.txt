@@ -1,0 +1,1 @@
+Dashboard DOM integration passed: cloud mode, export, scan, review, apply, and local run enabled.

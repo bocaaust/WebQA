@@ -212,3 +212,43 @@ def test_reopening_ui_discovers_active_job(app):
         gate.set()
         app.pool.submit(lambda: None).result(timeout=5)
     assert app.state()['active_job'] is None
+
+
+def test_cloud_http_export_import_and_notebook_download(app, tmp_path):
+    from webqa.cloud_protocol import atomic_json, fingerprint
+    saved = app.save_site('https://example.com')
+    server = ThreadingHTTPServer(('127.0.0.1', 0), handler(app, 'test-session'))
+    thread = threading.Thread(target=lambda: server.serve_forever(poll_interval=.01), daemon=True)
+    thread.start()
+    base = f'http://127.0.0.1:{server.server_port}'
+    def post(route, data):
+        request = urllib.request.Request(base + route, data=json.dumps(data).encode(),
+            headers={'X-WebQA-Token': 'test-session', 'Content-Type': 'application/json'})
+        with urllib.request.urlopen(request) as response:
+            return json.load(response)
+    try:
+        with urllib.request.urlopen(base + '/cloud-notebook') as response:
+            notebook = json.load(response)
+        assert notebook['nbformat'] == 4
+        request = post('/api/cloud/export', {'site': saved['id'], 'operation': 'develop', 'request': 'Create tests'})['request']
+        output = {'summary': 'Check home', 'assumptions': [], 'tests': [
+            {'id': 'home-a11y', 'kind': 'page', 'page': 'home', 'check': 'axe', 'viewport': 'desktop',
+             'priority': 'P1', 'why': 'Find accessibility issues'}]}
+        atomic_json(app.cloud.inbox / 'download.webqa-result.json', {'format': 'webqa-cloud-result', 'version': 1,
+            'request_id': request['id'], 'request_sha256': fingerprint(request), 'operation': 'develop',
+            'model': 'controlled-test-model', 'outputs': {'job-000': output}})
+        assert post('/api/cloud/scan', {})['files'][0]['status'] == 'ready'
+        imported = post('/api/cloud/import', {'file': 'download.webqa-result.json'})
+        assert imported['kind'] == 'proposal'
+        assert not (app.site(saved['id']) / 'test_custom.py').exists()
+        # Bad schemas return an actionable HTTP error instead of dropping the connection.
+        bad = json.loads((app.cloud.inbox / 'download.webqa-result.json').read_text())
+        bad['outputs']['job-000'] = {'invalid': 'schema'}
+        atomic_json(app.cloud.inbox / 'invalid.webqa-result.json', bad)
+        with pytest.raises(urllib.error.HTTPError) as error:
+            post('/api/cloud/import', {'file': 'invalid.webqa-result.json'})
+        assert error.value.code == 400
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
